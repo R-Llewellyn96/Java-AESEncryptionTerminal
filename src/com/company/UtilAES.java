@@ -25,13 +25,13 @@ import java.util.Base64;
 public class UtilAES {
 
 	// Generate Secret Key for AES, Symmetric key used for encryption and decryption
-	public static SecretKey generateKey(int n) throws NoSuchAlgorithmException {
+	public static SecretKey generateKey(int keySize) throws NoSuchAlgorithmException {
 
 		// Create key generator object and define instance as AES Symmetric Key
 		KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
 			
 		// Initialise key generator
-		keyGenerator.init(n);
+		keyGenerator.init(keySize);
 		    
 		// Generate key and assign value to key and return key object to method caller
 		return keyGenerator.generateKey();

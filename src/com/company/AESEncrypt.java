@@ -21,8 +21,13 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 
+// import java scanner library
+import java.util.Scanner;
+
 // Main class for performing AES encryption and decryption
 public class AESEncrypt {
+
+	public static Scanner scanner2 = new Scanner(System.in);
 
 	// Method Caller
 	public static void methodCaller(SecretKey key, String encryptionAlgorithm, String message) throws NoSuchPaddingException, InvalidKeyException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException {
@@ -54,17 +59,17 @@ public class AESEncrypt {
 	public static SecretKey passwordBasedInputs() throws InvalidKeySpecException, NoSuchAlgorithmException {
 
 		// Define password to generate key from
-		final String password = "password123";
+		final String password = getUserInput(1);
 
 		// Define salt to apply to password before hashing
-		final String salt = "12345";
+		final String salt = getUserInput(2);
 
 		// Generate secure key using password return key to method caller
 		return UtilAES.getKeyFromPassword(password, salt);
 	}
 
 	// Return key based on key generation method selected by user
-	public static SecretKey keyMethodSelection(int keyGenMethod) throws NoSuchAlgorithmException, InvalidKeySpecException {
+	public static SecretKey keyMethodSelection(int keyGenMethod, int keySize) throws NoSuchAlgorithmException, InvalidKeySpecException {
 
 		// User has selected to generate key from provided password
 		if (keyGenMethod == 1) {
@@ -75,8 +80,8 @@ public class AESEncrypt {
 			// User has selected to provide their own key
 		} else if (keyGenMethod == 2) {
 
-			// Define user input key
-			String userInputKey = "5EMkroyxam/w+pseq8anu1yXTUPmXfMDG/H8TPr9S5w=";
+			// Define user input key EXAMPLE: 5EMkroyxam/w+pseq8anu1yXTUPmXfMDG/H8TPr9S5w=
+			String userInputKey = getUserInput(2);
 
 			// Return user input key to caller
 			return UtilAES.stringToSecretKey(userInputKey);
@@ -90,30 +95,78 @@ public class AESEncrypt {
 	}
 
 	// Get message for encryption from user input prompt and return to caller
-	public static String getUserMessageInput(){
+	public static String getUserInput(int promptSelection){
 
-		// Define User input message
-		String message = "Testing of AES CBC and PKCS5Padding, this is a test of JCE on this subject"
-				+ "matter and an evaluation of the java crpytography extension for use as a text encryptor";
+		// Define user input message
+		String userInputPromptMessage = "";
 
-		// Return message string to caller
-		return message;
+		// If else switch statement, changes message based on prompt selection input to method
+		if (promptSelection == 0) {
+			userInputPromptMessage = "Enter the message you wish to encrypt, NOTE: Must not be blank!: ";
+		} else if (promptSelection == 1) {
+			userInputPromptMessage = "Enter the password you wish to use for key generation, " +
+					"NOTE: Must not be blank!: ";
+		} else if (promptSelection == 2) {
+			userInputPromptMessage = "Enter the salt you wish to use for key generation, " +
+					"NOTE: Must not be blank!: ";
+		} else if (promptSelection == 3) {
+			userInputPromptMessage = "Enter the pre-generated key you wish to use for encryption, " +
+					"NOTE: Must not be blank!: ";
+		}
+
+		// Define user input string
+		String userInput = "";
+
+		// Generate new scanner object
+		//Scanner scanner = new Scanner(System.in);
+
+		// Remove trailing whitespace from user input and check string is not empty
+		while (userInput.trim().isEmpty()){
+
+			// Prompt user to enter message for encryption
+			System.out.println(userInputPromptMessage);
+
+			// Read user input
+			userInput = scanner2.nextLine();
+		}
+
+		// Close scanner after getting input
+		//scanner.close();
+
+		// Return user input as message string to caller
+		return userInput.trim();
 	}
 	
 	// Main method, used for calling methods
 	public static void main(String[] args) throws NoSuchAlgorithmException, InvalidKeyException, NoSuchPaddingException, InvalidAlgorithmParameterException, BadPaddingException, IllegalBlockSizeException, InvalidKeySpecException {
 
+		////// Arguments for program use, add to CLI args for conversion of program to CLI based program //////
+
 		// Define encryption algorithm to use
 		String encryptionAlgorithm = "AES/CBC/PKCS5Padding";
 
+		// Define AES bit length to choose from
+		final int[] encryptionBitLength = {128, 256};
+
+		// Define AES bit length chosen, 128 or 256
+		int encryptionBitLengthChoice = encryptionBitLength[0];
+
 		// Select key generation method
-		int keyGenMethod = 2;
+		int keyGenMethod = 1;
+
+		// Select user input prompt selection
+		int UserInputPromptSelection = 0;
+
+		////// End of CLI Args //////
 
 		// Get user input message after validation
-		String message = getUserMessageInput();
+		String message = getUserInput(UserInputPromptSelection);
 
 		// Get key from key generation method selected
-		SecretKey key = keyMethodSelection(keyGenMethod);
+		SecretKey key = keyMethodSelection(keyGenMethod, encryptionBitLengthChoice);
+
+		// Close scanner
+		scanner2.close();
 
 		// Begin Message encryption using generated key, encryption algorithm and message
 		methodCaller(key, encryptionAlgorithm, message);
