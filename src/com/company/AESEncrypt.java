@@ -18,10 +18,11 @@ import java.security.spec.InvalidKeySpecException;
 // import java scanner library
 import java.util.Scanner;
 
-// Main class for performing AES encryption and decryption
+// Main class for performing AES encryption and decryption - Terminal Based
 public class AESEncrypt {
 
-	public static Scanner scanner2 = new Scanner(System.in);
+	// Define input scanner as global variable
+	public static Scanner scanner = new Scanner(System.in);
 
 	// Return key generated using password based inputs
 	public static SecretKey passwordBasedInputs() throws InvalidKeySpecException, NoSuchAlgorithmException {
@@ -62,6 +63,23 @@ public class AESEncrypt {
 		}
 	}
 
+	// Method for setting keygen method
+	public static SecretKey setKeyGenMethod(int keyGenMethod, int encryptionBitLengthChoice) throws InvalidKeySpecException, NoSuchAlgorithmException {
+
+		// Define program behaviour depending upon user keygen method chosen
+		// User has chosen random keygen method as default = 0
+		// Define program behaviour for password based key generation = 1
+		// Define program behaviour for User provided key = 2
+		// Get key from key generation method selected
+		if (keyGenMethod == 2) {
+			return keyMethodSelection(1, encryptionBitLengthChoice);
+		} else if (keyGenMethod == 3) {
+			return keyMethodSelection(2, encryptionBitLengthChoice);
+		} else {
+			return keyMethodSelection(0, encryptionBitLengthChoice);
+		}
+	}
+
 	// Get message for encryption from user input prompt and return to caller
 	public static String getUserInput(int promptSelection) {
 
@@ -89,7 +107,7 @@ public class AESEncrypt {
 			userInputPromptMessage = """
 					Select Encryption mode,
 					NOTE: Must not be blank!
-					[1] = Random, [2] = Password + Salt, [3] = User Provided Key:\s""";
+					[1] = Random, [2] = Password + Salt, [3] = User Provided Key and IV:\s""";
 		} else if (promptSelection == 6) {
 			userInputPromptMessage = "Enter Ciphertext to Decrypt:";
 		} else if (promptSelection == 7) {
@@ -101,6 +119,12 @@ public class AESEncrypt {
 					Select AES Encryption Key length,
 					NOTE: Must not be blank!
 					[1] = 128 bit, [2] = 256 bit:\s""";
+		} else if (promptSelection == 10) {
+			userInputPromptMessage = "Do you wish to perform decryption on another string using the same key and iv?\n" +
+					"Yes = [y/Y], No = [n/N]: ";
+		} else if (promptSelection == 11) {
+			userInputPromptMessage = "Do you wish to perform encryption on another string using the same key and iv?\n" +
+					"Yes = [y/Y], No = [n/N]: ";
 		}
 
 		// Define user input string
@@ -113,7 +137,7 @@ public class AESEncrypt {
 			System.out.println(userInputPromptMessage);
 
 			// Read user input
-			userInput = scanner2.nextLine();
+			userInput = scanner.nextLine();
 
 			// Check whether user provided key is more than 2 characters
 			if (promptSelection == 3) {
@@ -142,34 +166,20 @@ public class AESEncrypt {
 					System.out.println("WARNING, Key Length must be exactly 32 characters!");
 				}
 
+			} else if (promptSelection == 10 || promptSelection == 11) {
+
+				// Check that input is y or n
+				if (!userInput.trim().equals("y") && !userInput.trim().equals("Y") && !userInput.trim().equals("n") && !userInput.trim().equals("N")) {
+
+					userInput = "";
+
+					System.out.println("WARNING, You must enter [y], [Y], [n] or [N] to make a valid selection!");
+				}
 			}
 		}
 
-		// Close scanner after getting input
-		//scanner.close();
-
 		// Return user input as message string to caller
 		return userInput.trim();
-	}
-
-	// Method for setting keygen method
-	public static SecretKey setKeyGenMethod(int keyGenMethod, int encryptionBitLengthChoice) throws InvalidKeySpecException, NoSuchAlgorithmException {
-
-		//int keyGenMethod = Integer.parseInt(keyGenMethodString);
-
-		// Define program behaviour depending upon user keygen method chosen
-		// User has chosen random keygen method as default = 0
-		// Define program behaviour for password based key generation = 1
-		// Define program behaviour for User provided key = 2
-		// Get key from key generation method selected
-		if (keyGenMethod == 2) {
-			return keyMethodSelection(1, encryptionBitLengthChoice);
-		} else if (keyGenMethod == 3) {
-			return keyMethodSelection(2, encryptionBitLengthChoice);
-		} else {
-			return keyMethodSelection(0, encryptionBitLengthChoice);
-		}
-
 	}
 	
 	// Main method, used for calling methods
@@ -184,10 +194,13 @@ public class AESEncrypt {
 		// Define AES bit length to choose from
 		final int[] encryptionBitLength = {128, 256};
 
+		// Define choice of AES encryption bit length
 		int encryptionBitLengthChoice = 0;
 
+		// While loop to repeat prompt to user for input to key length choice
 		while (encryptionBitLengthChoice == 0) {
 
+			// Prompt user to select key length
 			String userEncryptionBitLengthChoice = getUserInput(9);
 
 			// Attempt string to integer conversion on user input, if it fails repeat the loop and try again
@@ -281,28 +294,69 @@ public class AESEncrypt {
 			// Convert key to string
 			String keyString = UtilAES.secretKeyToString(key);
 
-			// Get user input message after validation
-			String message = getUserInput(0);
+			// Define initialisation vector
+			String ivString = "";
 
-			// Close scanner
-			scanner2.close();
+			// Check whether user has selected to use their own key and iv
+			if ((keyGenMethod - 1) == 2) {
 
-			// Attempt encryption, if failure prompt user
-			try {
+				// Wrapped while loop to ensure key input
+				while (ivString.trim().isEmpty() || ivString.length() != 32) {
 
-				// Begin Message encryption using generated key, encryption algorithm and message
-				UtilTerminalOutputs.terminalOutputRunEncryption(keyString, encryptionAlgorithm, message);
-			} catch (Exception e) {
+					// Prompt user for iv and catch if invalid, then try again
+					try {
 
-				// Prompt user that message decryption has failed
-				System.out.println("ERROR!: Failure to Decrypt message, please check Decryption key, ciphertext, initialisation vector and try again!");
+						// Prompt user for initialisation vector
+						ivString = getUserInput(8);
+
+					} catch (Exception e) {
+
+						// Prompt user of conversion error
+						System.out.println("ERROR!: Failure converting input to initialisation vector, please check your inputs and try again!");
+
+						// Set input string to empty to allow for retry
+						ivString = "";
+					}
+				}
+
+				// If user is not using their own IV then generate one
+			} else {
+				// Generate Initialisation Vector String
+				ivString = UtilAES.generateIVString();
+			}
+
+			// Define user selection for repeating input loop
+			String repeatEncryptionWithNewCipherText = "y";
+
+			while (repeatEncryptionWithNewCipherText.equals("y") || repeatEncryptionWithNewCipherText.equals("Y")) {
+
+					// Get user input message after validation
+					String message = getUserInput(0);
+
+				try {
+
+					// Begin Message encryption using generated key, encryption algorithm, message and generated iv
+					UtilTerminalOutputs.terminalOutputRunEncryption(keyString, encryptionAlgorithm, message, ivString);
+
+				} catch (Exception e) {
+
+					// Prompt user that message encryption has failed
+					System.out.println("ERROR!: Failure to Encrypt message, please check Encryption key, ciphertext, initialisation vector and try again!");
+				}
+
+				// Prompt user whether they wish to Encrypt another message
+				repeatEncryptionWithNewCipherText = getUserInput(11);
+
+				// if user has chosen not to repeat, then close input scanner and exit main method
+				if (repeatEncryptionWithNewCipherText.equals("n") || repeatEncryptionWithNewCipherText.equals("N")) {
+
+					// Close scanner
+					scanner.close();
+				}
 			}
 
 			// Program mode set to Decryption
 		} else if (programModeSelection == 2) {
-
-			// Prompt user for cipher text to decrypt
-			String userCiphertext = getUserInput(6);
 
 			// Define decryption key both string and secret key
 			String userDecryptionKeyString = "";
@@ -355,20 +409,40 @@ public class AESEncrypt {
 			// Convert decryption key to string
 			String userDecryptionKeyStringConv = UtilAES.secretKeyToString(userDecryptionKey);
 
-			// Attempt decryption, if failure prompt user
-			try {
+			// Define user selection for repeating input loop
+			String repeatDecryptionWithNewCipherText = "y";
 
-				// Call methods for Decryption
-				UtilTerminalOutputs.terminalOutputRunDecryption(userDecryptionKeyStringConv, encryptionAlgorithm, userCiphertext.trim(), ivString);
+			while (repeatDecryptionWithNewCipherText.equals("y") || repeatDecryptionWithNewCipherText.equals("Y")) {
 
-			} catch (Exception e) {
+				// Prompt user for cipher text to decrypt
+				String userCiphertext = getUserInput(6);
 
-				// Prompt user that message decryption has failed
-				System.out.println("ERROR!: Failure to Decrypt message, please check Decryption key, ciphertext, initialisation vector and try again!");
+				// Attempt decryption, if failure prompt user
+				try {
+
+					// Call methods for Decryption
+					UtilTerminalOutputs.terminalOutputRunDecryption(userDecryptionKeyStringConv, encryptionAlgorithm, userCiphertext.trim(), ivString);
+
+				} catch (Exception e) {
+
+					// Prompt user that message decryption has failed
+					System.out.println("ERROR!: Failure to Decrypt message, please check Decryption key, ciphertext, initialisation vector and try again!");
+				}
+
+				// Prompt user whether they wish to Decrypt another message
+				repeatDecryptionWithNewCipherText = getUserInput(10);
+
+				// if user has chosen not to repeat, then close input scanner and exit main method
+				if (repeatDecryptionWithNewCipherText.equals("n") || repeatDecryptionWithNewCipherText.equals("N")) {
+
+					// Close scanner
+					scanner.close();
+				}
 			}
 		}
 
-	// End of main method
+		// End of main method
+		System.out.println("\nProgram Terminated.");
 	}
 // End of class
 }

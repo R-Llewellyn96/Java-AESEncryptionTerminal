@@ -11,10 +11,7 @@ import java.security.NoSuchAlgorithmException;
 public class UtilTerminalOutputs {
 
     // Designed for terminal outputs only, called to run encryption process and output results to terminal
-    public static void terminalOutputRunEncryption(String keyString, String encryptionAlgorithm, String message) throws NoSuchPaddingException, InvalidAlgorithmParameterException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
-
-        // Generate Initialisation Vector String
-        String ivString = UtilAES.generateIVString();
+    public static void terminalOutputRunEncryption(String keyString, String encryptionAlgorithm, String message, String ivString) throws NoSuchPaddingException, InvalidAlgorithmParameterException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
 
         // Call Encryption function
         String[] encryptionOutputArr = UtilAES.encryptMessage(UtilAES.stringToSecretKey(keyString), encryptionAlgorithm, message, ivString);
