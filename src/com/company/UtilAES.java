@@ -55,16 +55,23 @@ public class UtilAES {
 		
 	// AES Requires an initialisation vector in CBC mode,
 	// this method generates an initialisation vector in a securely random way
-	public static IvParameterSpec generateIv() {
-			
-		// Define initialisation vector as a 16 bit byte
-		byte[] iv = new byte[16];
-		    
-		// Generate random byte string in a secure way
-		new SecureRandom().nextBytes(iv);
+	public static IvParameterSpec generateIvParamSpec(byte[] iv) {
 		    
 		// Return initialisation vector to method caller
 		return new IvParameterSpec(iv);
+	}
+
+	// Generate Initialisation Vector
+	public static byte[] generateIV() {
+
+		// Define initialisation vector as a 16 bit byte
+		byte[] iv = new byte[16];
+
+		// Generate random byte string in a secure way
+		new SecureRandom().nextBytes(iv);
+
+		// Return Initialisation Vector to caller
+		return iv;
 	}
 		
 	// Begin AES Encryption using algorithm, message, key and initialisation vector
