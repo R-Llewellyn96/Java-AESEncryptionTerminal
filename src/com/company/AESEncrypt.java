@@ -9,15 +9,9 @@ package com.company;
 
 
 // import java crypto libraries
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
-import javax.crypto.spec.IvParameterSpec;
 
 // import java security libraries
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 
@@ -28,59 +22,6 @@ import java.util.Scanner;
 public class AESEncrypt {
 
 	public static Scanner scanner2 = new Scanner(System.in);
-
-	// Method Caller
-	public static void methodCallerEncrypt(SecretKey key, String encryptionAlgorithm, String message) throws NoSuchPaddingException, InvalidKeyException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException {
-
-		// Generate Initialisation Vector
-		byte[] iv = UtilAES.generateIV();
-
-		// Generate parameter spec
-		IvParameterSpec ivParamSpec = UtilAES.generateIvParamSpec(iv);
-
-		// Generate Cipher-text using encryption
-		String cipherText = UtilAES.encrypt(encryptionAlgorithm, message, key, ivParamSpec);
-
-		// Decrypt Cipher-text into plain text
-		String plainText = UtilAES.decrypt(encryptionAlgorithm, cipherText, key, ivParamSpec);
-
-		// Convert key to string to allow for display &
-		// Print AES key being used to terminal
-		System.out.println("AES Symmetric key used : " + UtilAES.secretKeyToString(key));
-
-		// Print input message
-		System.out.println("Input message          : " + message);
-
-		// Print cipher text
-		System.out.println("Encrypted Ciphertext   : " + cipherText);
-
-		// Print decoded plaintext
-		System.out.println("Decrypted Ciphertext   : " + plainText);
-	}
-
-	// Method Caller
-	public static void methodCallerDecrypt(SecretKey key, String encryptionAlgorithm, String cipherText, String iv) throws NoSuchPaddingException, InvalidKeyException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException {
-
-		// Generate parameter spec
-		IvParameterSpec ivParamSpec = UtilAES.generateIvParamSpec(UtilsConv.hexStringToByteArray(iv));
-
-		// Decrypt Cipher-text into plain text
-		String plainText = UtilAES.decrypt(encryptionAlgorithm, cipherText, key, ivParamSpec);
-
-		// Convert key to string to allow for display &
-		// Print AES key being used to terminal
-		System.out.println("AES Symmetric key used : " + UtilAES.secretKeyToString(key));
-
-		// Print Initialisation Vector
-		System.out.println("IV: " + iv);
-
-		// Print cipher text
-		System.out.println("Encrypted Ciphertext   : " + cipherText);
-
-		// Print decoded plaintext
-		System.out.println("Decrypted Ciphertext   : " + plainText);
-	}
-
 
 	// Return key generated using password based inputs
 	public static SecretKey passwordBasedInputs() throws InvalidKeySpecException, NoSuchAlgorithmException {
@@ -150,11 +91,16 @@ public class AESEncrypt {
 					NOTE: Must not be blank!
 					[1] = Random, [2] = Password + Salt, [3] = User Provided Key:\s""";
 		} else if (promptSelection == 6) {
-			userInputPromptMessage = "Enter Ciphertext to Decrypt";
+			userInputPromptMessage = "Enter Ciphertext to Decrypt:";
 		} else if (promptSelection == 7) {
-			userInputPromptMessage = "Enter Key for Decryption";
+			userInputPromptMessage = "Enter Key for Decryption:";
 		} else if (promptSelection == 8) {
-			userInputPromptMessage = "Enter initialisation vector";
+			userInputPromptMessage = "Enter initialisation vector:";
+		} else if (promptSelection == 9) {
+			userInputPromptMessage = """
+					Select AES Encryption Key length,
+					NOTE: Must not be blank!
+					[1] = 128 bit, [2] = 256 bit:\s""";
 		}
 
 		// Define user input string
@@ -177,7 +123,6 @@ public class AESEncrypt {
 					userInput = "";
 
 					System.out.println("WARNING, Key Length must be exactly 44 characters!");
-					System.out.println("IJEAVZ7eOIadyjJSeWuTvD2KSlYeaulVeYFO7BQnmYY=".length());
 				}
 			} else if (promptSelection == 7) {
 
@@ -186,7 +131,15 @@ public class AESEncrypt {
 					userInput = "";
 
 					System.out.println("WARNING, Key Length must be exactly 32 or 44 characters!");
-					System.out.println("IJEAVZ7eOIadyjJSeWuTvD2KSlYeaulVeYFO7BQnmYY=".length());
+				}
+
+			} else if (promptSelection == 8) {
+
+				// Check that length of input key is greater than 2 characters
+				if (((userInput.trim()).length() != 32)) {
+					userInput = "";
+
+					System.out.println("WARNING, Key Length must be exactly 32 characters!");
 				}
 
 			}
@@ -209,12 +162,6 @@ public class AESEncrypt {
 		// Define program behaviour for password based key generation = 1
 		// Define program behaviour for User provided key = 2
 		// Get key from key generation method selected
-		/*return switch (keyGenMethod) {
-			case 2 -> keyMethodSelection(1, encryptionBitLengthChoice);
-			case 3 -> keyMethodSelection(2, encryptionBitLengthChoice);
-			default -> keyMethodSelection(0, encryptionBitLengthChoice);
-		};*/
-
 		if (keyGenMethod == 2) {
 			return keyMethodSelection(1, encryptionBitLengthChoice);
 		} else if (keyGenMethod == 3) {
@@ -226,7 +173,7 @@ public class AESEncrypt {
 	}
 	
 	// Main method, used for calling methods
-	public static void main(String[] args) throws NoSuchAlgorithmException, InvalidKeyException, NoSuchPaddingException, InvalidAlgorithmParameterException, BadPaddingException, IllegalBlockSizeException, InvalidKeySpecException {
+	public static void main(String[] args) throws InvalidKeySpecException, NoSuchAlgorithmException {
 
 		// Define program mode selection value, 1 = encrypt, 2 = decrypt
 		int programModeSelection = 0;
@@ -237,8 +184,41 @@ public class AESEncrypt {
 		// Define AES bit length to choose from
 		final int[] encryptionBitLength = {128, 256};
 
-		// Define AES bit length chosen, 128 or 256
-		int encryptionBitLengthChoice = encryptionBitLength[1];
+		int encryptionBitLengthChoice = 0;
+
+		while (encryptionBitLengthChoice == 0) {
+
+			String userEncryptionBitLengthChoice = getUserInput(9);
+
+			// Attempt string to integer conversion on user input, if it fails repeat the loop and try again
+			try {
+
+				// Read user input and attempt integer conversion
+				encryptionBitLengthChoice = Integer.parseInt(userEncryptionBitLengthChoice.trim());
+
+				// Catch any errors and handle failure to convert input to integer
+			} catch (Exception e) {
+
+				// Set program mode selection to zero so that while loop runs again
+				encryptionBitLengthChoice = 0;
+
+				// Prompt user of input error and retry
+				System.out.println("ERROR, Could not convert input to a number, please enter a number!");
+			}
+		}
+
+		// Check user selection of key length, 1 = 128 bit, 2 = 256 bit
+		if (encryptionBitLengthChoice == 1) {
+
+			// Define AES bit length chosen, 0 = 128, 1 = 256
+			encryptionBitLengthChoice = encryptionBitLength[0];
+
+			// Default choice of 256 bit AES encryption
+		} else {
+
+			// Define AES bit length chosen, 0 = 128, 1 = 256
+			encryptionBitLengthChoice = encryptionBitLength[1];
+		}
 
 		// While loop for reminding user to select valid encryption or decryption mode
 		while (programModeSelection != 1 && programModeSelection != 2) {
@@ -295,7 +275,11 @@ public class AESEncrypt {
 				}
 			}
 
+			// Generate Secret Key
 			SecretKey key = setKeyGenMethod(keyGenMethod, encryptionBitLengthChoice);
+
+			// Convert key to string
+			String keyString = UtilAES.secretKeyToString(key);
 
 			// Get user input message after validation
 			String message = getUserInput(0);
@@ -303,9 +287,18 @@ public class AESEncrypt {
 			// Close scanner
 			scanner2.close();
 
-			// Begin Message encryption using generated key, encryption algorithm and message
-			methodCallerEncrypt(key, encryptionAlgorithm, message);
+			// Attempt encryption, if failure prompt user
+			try {
 
+				// Begin Message encryption using generated key, encryption algorithm and message
+				UtilTerminalOutputs.terminalOutputRunEncryption(keyString, encryptionAlgorithm, message);
+			} catch (Exception e) {
+
+				// Prompt user that message decryption has failed
+				System.out.println("ERROR!: Failure to Decrypt message, please check Decryption key, ciphertext, initialisation vector and try again!");
+			}
+
+			// Program mode set to Decryption
 		} else if (programModeSelection == 2) {
 
 			// Prompt user for cipher text to decrypt
@@ -335,20 +328,19 @@ public class AESEncrypt {
 
 					// Set input string to empty to allow for retry
 					userDecryptionKeyString = "";
-
 				}
 			}
 
 			// Define initialisation vector
-			String iv = "";
+			String ivString = "";
 
 			// Wrapped while loop to ensure key input
-			while (iv.trim().isEmpty()) {
+			while (ivString.trim().isEmpty() || ivString.length() != 32) {
 
 				try {
 
 					// Prompt user for initialisation vector
-					iv = getUserInput(8);
+					ivString = getUserInput(8);
 
 				} catch (Exception e) {
 
@@ -356,24 +348,27 @@ public class AESEncrypt {
 					System.out.println("ERROR!: Failure converting input to initialisation vector, please check your inputs and try again!");
 
 					// Set input string to empty to allow for retry
-					iv = "";
-
+					ivString = "";
 				}
 			}
 
-			// Call methods for Decryption
-			methodCallerDecrypt(userDecryptionKey, encryptionAlgorithm, userCiphertext.trim(), iv);
+			// Convert decryption key to string
+			String userDecryptionKeyStringConv = UtilAES.secretKeyToString(userDecryptionKey);
+
+			// Attempt decryption, if failure prompt user
+			try {
+
+				// Call methods for Decryption
+				UtilTerminalOutputs.terminalOutputRunDecryption(userDecryptionKeyStringConv, encryptionAlgorithm, userCiphertext.trim(), ivString);
+
+			} catch (Exception e) {
+
+				// Prompt user that message decryption has failed
+				System.out.println("ERROR!: Failure to Decrypt message, please check Decryption key, ciphertext, initialisation vector and try again!");
+			}
 		}
-
-		////// Arguments for program use, add to CLI args for conversion of program to CLI based program //////
-
-		////// End of CLI Args //////
-
-
-
 
 	// End of main method
 	}
-	
 // End of class
 }

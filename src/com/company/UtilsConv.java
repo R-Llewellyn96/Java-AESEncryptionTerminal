@@ -15,7 +15,7 @@ public class UtilsConv {
      */
     public static String toHex(byte[] data, int length)
     {
-        StringBuffer	buf = new StringBuffer();
+        StringBuffer buf = new StringBuffer();
 
         for (int i = 0; i != length; i++)
         {

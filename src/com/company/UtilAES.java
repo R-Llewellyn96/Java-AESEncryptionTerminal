@@ -73,6 +73,16 @@ public class UtilAES {
 		// Return Initialisation Vector to caller
 		return iv;
 	}
+
+	// Method for generation of IV string
+	public static String generateIVString() {
+
+		// Generate Initialisation Vector
+		byte[] iv = UtilAES.generateIV();
+
+		// Convert Initialisation Vector to String
+		return UtilsConv.toHex(iv);
+	}
 		
 	// Begin AES Encryption using algorithm, message, key and initialisation vector
 	public static String encrypt(String algorithm, String message, SecretKey key,
@@ -129,6 +139,36 @@ public class UtilAES {
 			
 		// Return secret key as a string to method caller
 		return Base64.getEncoder().encodeToString(key.getEncoded());
+	}
+
+	// Encryption of full message, returns string array for display on UI
+	public static String[] encryptMessage(SecretKey key, String encryptionAlgorithm, String message, String ivString) throws NoSuchPaddingException, InvalidKeyException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException {
+
+		// Generate parameter spec
+		IvParameterSpec ivParamSpec = UtilAES.generateIvParamSpec(UtilsConv.hexStringToByteArray(ivString));
+
+		// Generate Cipher-text using encryption
+		String cipherText = UtilAES.encrypt(encryptionAlgorithm, message, key, ivParamSpec);
+
+		// Decrypt Cipher-text into plain text for checking of valid output
+		String plainText = UtilAES.decrypt(encryptionAlgorithm, cipherText, key, ivParamSpec);
+
+		// Return array of strings for output to UI
+		return new String[]{UtilAES.secretKeyToString(key), ivString, cipherText, plainText};
+
+	}
+
+	// Decryption of full message, returns string array for display on UI
+	public static String[] decryptMessage(SecretKey key, String encryptionAlgorithm, String cipherText, String ivString) throws NoSuchPaddingException, InvalidKeyException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException {
+
+		// Generate parameter spec
+		IvParameterSpec ivParamSpec = UtilAES.generateIvParamSpec(UtilsConv.hexStringToByteArray(ivString));
+
+		// Decrypt Cipher-text into plain text
+		String plainText = UtilAES.decrypt(encryptionAlgorithm, cipherText, key, ivParamSpec);
+
+		// Return array of strings for output to UI
+		return new String[]{UtilAES.secretKeyToString(key), ivString, cipherText, plainText};
 	}
 		
 // End of class
