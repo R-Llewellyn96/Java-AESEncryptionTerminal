@@ -141,6 +141,28 @@ public class UtilAES {
 		return Base64.getEncoder().encodeToString(key.getEncoded());
 	}
 
+	// Append IV to Ciphertext for sending
+	public static String addIVToCiphertext(String iv, String ciphertext) {
+
+		// Return iv and ciphertext appended
+		return iv + ciphertext;
+	}
+
+	// Strip IV from read ciphertext
+	public static String[] stripIVFromCiphertext(String combinedIvAndCiphertext) {
+
+		// Define character length of IV and get length of combined IV and Ciphertext input
+		int ivLength = 32;
+		int stringLength = combinedIvAndCiphertext.length();
+
+		// Split string into IV and Ciphertext, NOTE String starts at zero
+		String iv = combinedIvAndCiphertext.substring(0, ivLength);
+		String ciphertext = combinedIvAndCiphertext.substring(ivLength, stringLength);
+
+		// Return both as Strings in array including separated IV and Ciphertext
+		return new String[]{iv, ciphertext};
+	}
+
 	// Encryption of full message, returns string array for display on UI
 	public static String[] encryptMessage(SecretKey key, String encryptionAlgorithm, String message, String ivString) throws NoSuchPaddingException, InvalidKeyException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException {
 
@@ -173,11 +195,3 @@ public class UtilAES {
 		
 // End of class
 }
-
-
-
-
-
-
-
-

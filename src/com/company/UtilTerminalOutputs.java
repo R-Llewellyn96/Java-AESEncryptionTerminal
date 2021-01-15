@@ -36,10 +36,15 @@ public class UtilTerminalOutputs {
                 CipherText            : %s
                 CipherText            : SHAREABLE
                 
+                NOTE: Recommended method of transmitting IV and Ciphertext:
+                
+                Combined IV and Ciphertext : %s 
+                Combined IV and Ciphertext : SHAREABLE 
+                
                 For the purposes of AES Symmetric key sharing, in-person key exchange is recommended 
                 or another secure method of key exchange known as Diffie-Hellman key exchange is recommended 
                 if personal key exchange is not possible or you believe you're being monitored.
-                """.formatted(encryptionOutputArr[0], encryptionOutputArr[1], encryptionOutputArr[2]);
+                """.formatted(encryptionOutputArr[0], encryptionOutputArr[1], encryptionOutputArr[2], UtilAES.addIVToCiphertext(encryptionOutputArr[1], encryptionOutputArr[2]));
 
         // Prompt user that Encryption is happening
         System.out.println("\nEncryption Mode Active : ");
@@ -60,6 +65,12 @@ public class UtilTerminalOutputs {
         // Display security information prompt to inform user what information
         // is shareable and what isn't
         System.out.println("\n" + securityInformationPrompt);
+
+        // Print cipher text
+        System.out.println("Results:\nInput Plaintext      : " + encryptionOutputArr[3]);
+
+        // Print encrypted plaintext
+        System.out.println("Encrypted Ciphertext : " + encryptionOutputArr[2] + "\n");
     }
 
     // Designed for terminal outputs only, called to run decryption process and output results to terminal
@@ -88,10 +99,15 @@ public class UtilTerminalOutputs {
                 CipherText            : %s
                 CipherText            : SHAREABLE
                 
+                NOTE: Recommended method of transmitting IV and Ciphertext:
+                
+                Combined IV and Ciphertext : %s 
+                Combined IV and Ciphertext : SHAREABLE
+                
                 For the purposes of AES Symmetric key sharing, in-person key exchange is recommended 
                 or another secure method of key exchange known as Diffie-Hellman key exchange is recommended 
                 if personal key exchange is not possible or you believe you're being monitored.
-                """.formatted(decryptionOutputArr[0], decryptionOutputArr[1], decryptionOutputArr[2]);
+                """.formatted(decryptionOutputArr[0], decryptionOutputArr[1], decryptionOutputArr[2], UtilAES.addIVToCiphertext(decryptionOutputArr[1], decryptionOutputArr[2]));
 
         // Prompt user that Decryption is happening
         System.out.println("\nDecryption Mode Active : ");
@@ -112,6 +128,12 @@ public class UtilTerminalOutputs {
         // Display security information prompt to inform user what information
         // is shareable and what isn't
         System.out.println("\n" + securityInformationPrompt);
+
+        // Print cipher text
+        System.out.println("Results:\nEncrypted Ciphertext   : " + decryptionOutputArr[2]);
+
+        // Print decoded plaintext
+        System.out.println("Decrypted Ciphertext   : " + decryptionOutputArr[3] + "\n");
 
     }
 }
