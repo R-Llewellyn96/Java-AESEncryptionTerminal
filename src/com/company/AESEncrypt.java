@@ -89,31 +89,6 @@ public class AESEncrypt {
 			// Convert input key string into Secret Key
 			SecretKey userDecryptionKey = UtilAES.stringToSecretKey(userDecryptionKeyString);
 
-			/*
-			// Define ivString
-			String ivString = "";
-
-			// Define Ciphertext
-			String ciphertext = "";
-
-
-			if (combinedIvAndCipherChoice == 1) {
-
-				// Define initialisation vector
-				ivString = UtilGetTerminalInputs.getIVInput();
-
-				// If user has selected to use combined iv and ciphertext
-			} else {
-
-				// Prompt user for cipher text to decrypt which includes IV
-				String[] userIvAndCiphertext = handleIVAndCiphertextSelection();
-
-				ivString = userIvAndCiphertext[0];
-
-				ciphertext = userIvAndCiphertext[1];
-
-			}*/
-
 			// Convert decryption key to string
 			String userDecryptionKeyStringConv = UtilAES.secretKeyToString(userDecryptionKey);
 

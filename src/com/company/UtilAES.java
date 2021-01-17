@@ -77,11 +77,9 @@ public class UtilAES {
 	// Method for generation of IV string
 	public static String generateIVString() {
 
-		// Generate Initialisation Vector
-		byte[] iv = UtilAES.generateIV();
-
+		// Generate Initialisation Vector and
 		// Convert Initialisation Vector to String
-		return UtilsConv.toHex(iv);
+		return UtilsConv.toHex(UtilAES.generateIV());
 	}
 		
 	// Begin AES Encryption using algorithm, message, key and initialisation vector
@@ -95,13 +93,11 @@ public class UtilAES {
 			
 		// Initialise cipher for encryption
 		cipher.init(Cipher.ENCRYPT_MODE, key, iv);
-			
+
 		// Define cipher-text as encrypted input string
-		byte[] cipherText = cipher.doFinal(message.getBytes());
-			
 		// Encode byte array of cipher-text to a string and return cipher-text as
 		// a string object to method caller
-		return Base64.getEncoder().encodeToString(cipherText);
+		return Base64.getEncoder().encodeToString((cipher.doFinal(message.getBytes())));
 	}
 		
 	// Begin AES Decryption using algorithm, cipher-text, key and initialisation vector
@@ -117,21 +113,17 @@ public class UtilAES {
 		cipher.init(Cipher.DECRYPT_MODE, key, iv);
 			
 		// Define plain-text as decrypted byte array of cipher-text
-		byte[] plainText = cipher.doFinal(Base64.getDecoder().decode(cipherText));
-			   
 		// Convert byte array to a standard string object and return plain text as
 		// a string object to method caller
-		return new String(plainText);
+		return new String((cipher.doFinal(Base64.getDecoder().decode(cipherText))));
 	}
 		
 	// Take string and convert to secret key object
 	public static SecretKey stringToSecretKey(String keyString) {
 			
-		// Decode the base 64 encoded key string
-		byte[] decodedKey = Base64.getDecoder().decode(keyString);
-			
+		// Decode the base 64 encoded key string and
 		// Return secret key string as a secret key object to method caller
-		return new SecretKeySpec(decodedKey, 0, decodedKey.length, "AES");
+		return new SecretKeySpec((Base64.getDecoder().decode(keyString)), 0, (Base64.getDecoder().decode(keyString)).length, "AES");
 	}
 		
 	// Take secret key object and convert to string
@@ -156,11 +148,8 @@ public class UtilAES {
 		int stringLength = combinedIvAndCiphertext.length();
 
 		// Split string into IV and Ciphertext, NOTE String starts at zero
-		String iv = combinedIvAndCiphertext.substring(0, ivLength);
-		String ciphertext = combinedIvAndCiphertext.substring(ivLength, stringLength);
-
 		// Return both as Strings in array including separated IV and Ciphertext
-		return new String[]{iv, ciphertext};
+		return new String[]{(combinedIvAndCiphertext.substring(0, ivLength)), (combinedIvAndCiphertext.substring(ivLength, stringLength))};
 	}
 
 	// Encryption of full message, returns string array for display on UI

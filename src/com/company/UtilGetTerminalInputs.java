@@ -300,56 +300,44 @@ public class UtilGetTerminalInputs {
     public static String getUserInput(int promptSelection) {
 
         // Define user input message
-        String userInputPromptMessage = "";
+        String userInputPromptMessage;
 
-        // If else switch statement, changes message based on prompt selection input to method
-        if (promptSelection == 0) {
-            userInputPromptMessage = "Enter the message you wish to encrypt, NOTE: Must not be blank!: ";
-        } else if (promptSelection == 1) {
-            userInputPromptMessage = "Enter the password you wish to use for key generation, " +
+        // Input prompt using enhanced switch
+        userInputPromptMessage = switch (promptSelection) {
+            case 0 -> "Enter the message you wish to encrypt, NOTE: Must not be blank!: ";
+            case 1 -> "Enter the password you wish to use for key generation, " +
                     "NOTE: Must not be blank!: ";
-        } else if (promptSelection == 2) {
-            userInputPromptMessage = "Enter the salt you wish to use for key generation, " +
+            case 2 -> "Enter the salt you wish to use for key generation, " +
                     "NOTE: Must not be blank!: ";
-        } else if (promptSelection == 3) {
-            userInputPromptMessage = "Enter the pre-generated key you wish to use for encryption, " +
+            case 3 -> "Enter the pre-generated key you wish to use for encryption, " +
                     "NOTE: Must not be blank!: ";
-        } else if (promptSelection == 4) {
-            userInputPromptMessage = """
-					Select program mode,
-					NOTE: Must not be blank!
-					[1] = Encrypt, [2] = Decrypt:\s""";
-        } else if (promptSelection == 5) {
-            userInputPromptMessage = """
-					Select Encryption mode,
-					NOTE: Must not be blank!
-					[1] = Random, [2] = Password + Salt, [3] = User Provided Key:\s""";
-        } else if (promptSelection == 6) {
-            userInputPromptMessage = "Enter Ciphertext to Decrypt:";
-        } else if (promptSelection == 7) {
-            userInputPromptMessage = "Enter Key for Decryption:";
-        } else if (promptSelection == 8) {
-            userInputPromptMessage = "Enter Initialisation vector:";
-        } else if (promptSelection == 9) {
-            userInputPromptMessage = """
-					Select AES Encryption Key length,
-					NOTE: Must not be blank!
-					[1] = 128 bit, [2] = 256 bit:\s""";
-        } else if (promptSelection == 10) {
-            userInputPromptMessage = "Do you wish to perform decryption on another string using the same key?\n" +
+            case 4 -> """
+                    Select program mode,
+                    NOTE: Must not be blank!
+                    [1] = Encrypt, [2] = Decrypt:\s""";
+            case 5 -> """
+                    Select Encryption mode,
+                    NOTE: Must not be blank!
+                    [1] = Random, [2] = Password + Salt, [3] = User Provided Key:\s""";
+            case 6 -> "Enter Ciphertext to Decrypt:";
+            case 7 -> "Enter Key for Decryption:";
+            case 8 -> "Enter Initialisation vector:";
+            case 9 -> """
+                    Select AES Encryption Key length,
+                    NOTE: Must not be blank!
+                    [1] = 128 bit, [2] = 256 bit:\s""";
+            case 10 -> "Do you wish to perform decryption on another string using the same key?\n" +
                     "Yes = [y/Y], No = [n/N]: ";
-        } else if (promptSelection == 11) {
-            userInputPromptMessage = "Do you wish to perform encryption on another string using the same key?\n" +
+            case 11 -> "Do you wish to perform encryption on another string using the same key?\n" +
                     "Yes = [y/Y], No = [n/N]: ";
-        } else if (promptSelection == 12) {
-            userInputPromptMessage = """
-					Select whether you have a Separate IV and Ciphertext to input, 
-					Or whether you have a combined IV and Ciphertext to input
-					NOTE: Must not be blank!
-					[1] = Separate IV and Ciphertext, [2] = Combined IV and Ciphertext:\s""";
-        } else if (promptSelection == 13) {
-            userInputPromptMessage = "Enter combined Initialisation vector and Ciphertext: ";
-        }
+            case 12 -> """
+                    Select whether you have a Separate IV and Ciphertext to input, 
+                    Or whether you have a combined IV and Ciphertext to input
+                    NOTE: Must not be blank!
+                    [1] = Separate IV and Ciphertext, [2] = Combined IV and Ciphertext:\s""";
+            case 13 -> "Enter combined Initialisation vector and Ciphertext: ";
+            default -> throw new IllegalStateException("Unexpected value: " + promptSelection);
+        };
 
         // Define user input string
         String userInput = "";
