@@ -49,7 +49,7 @@ public class UtilGetTerminalInputs {
         int programModeSelection = 0;
 
         // While loop for reminding user to select valid encryption or decryption mode
-        while (programModeSelection != 1 && programModeSelection != 2) {
+        while (programModeSelection != 1 && programModeSelection != 2 && programModeSelection != 3) {
 
             // Prompt user for program mode, Encrypt or Decrypt
             String programModeSelectionString = getUserInput(4);
@@ -295,6 +295,39 @@ public class UtilGetTerminalInputs {
         }
     }
 
+    // Get the month user selected
+    public static int getUserMonth() {
+
+        // Define ane initialise month number
+        int monthNo = 0;
+
+        // Prompt user to choose whether they're using a separate or combined IV and Ciphertext
+        while (monthNo < 1 || monthNo > 13) {
+
+            // Prompt user for IV and Ciphertext mode, separate = 1, combined = 2
+            String monthNoString = getUserInput(14);
+
+            // Attempt string to integer conversion on user input, if it fails repeat the loop and try again
+            try {
+
+                // Read user input and attempt integer conversion
+                monthNo = Integer.parseInt(monthNoString.trim());
+
+                // Catch any errors and handle failure to convert input to integer
+            } catch (Exception e) {
+
+                // Set mode selection to zero so that while loop runs again
+                monthNo = 0;
+
+                // Prompt user of input error and retry
+                System.out.println("ERROR, Could not convert input to a number, please enter a number!");
+            }
+        }
+
+        // return the number of users selected month to caller
+        return monthNo;
+    }
+
     // Get user inputs for a variety of things
     // Get message for encryption from user input prompt and return to caller
     public static String getUserInput(int promptSelection) {
@@ -314,7 +347,7 @@ public class UtilGetTerminalInputs {
             case 4 -> """
                     Select program mode,
                     NOTE: Must not be blank!
-                    [1] = Encrypt, [2] = Decrypt:\s""";
+                    [1] = Encrypt, [2] = Decrypt, [3] = Generate Monthly Code Book:\s""";
             case 5 -> """
                     Select Encryption mode,
                     NOTE: Must not be blank!
@@ -336,6 +369,11 @@ public class UtilGetTerminalInputs {
                     NOTE: Must not be blank!
                     [1] = Separate IV and Ciphertext, [2] = Combined IV and Ciphertext:\s""";
             case 13 -> "Enter combined Initialisation vector and Ciphertext: ";
+            case 14 -> """
+                    Enter number of month you wish to generate keys for:, 
+                    E.G. [1] = January, [2] = February, [3] = March, etc..
+                    NOTE: To select February leap year, input [13] = February Leap Year
+                    Enter Month Number:\s""";
             default -> throw new IllegalStateException("Unexpected value: " + promptSelection);
         };
 

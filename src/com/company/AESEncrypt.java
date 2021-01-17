@@ -95,6 +95,14 @@ public class AESEncrypt {
 			// Perform Decryption and ask user if they would like to Decrypt another message
 			UtilGetTerminalInputs.getRepeatingDecryption(encryptionAlgorithm, userDecryptionKeyStringConv, combinedIvAndCipherChoice);
 
+			// Program mode set to Generate Code Book
+		} else if (programModeSelection == 3) {
+
+			// Generate code book
+			UtilFileOutputs.generateCodeBook(encryptionBitLengthChoice);
+
+			System.out.println("Codebook Generated.");
+
 		}
 
 		// End of main method
