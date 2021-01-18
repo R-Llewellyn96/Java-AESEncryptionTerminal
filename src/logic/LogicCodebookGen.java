@@ -1,4 +1,12 @@
-package com.company;
+package logic;
+
+/*
+ * Project Java-AESEncryption
+ * File: LogicCodebookGen.java
+ * @author Ryan Llewellyn
+ * Date: 09/01/2021
+ * Purpose: Handles File creation and generation of monthly Codebook.
+ */
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -7,7 +15,7 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 
 // Class handles outputs to files
-public class UtilFileOutputs {
+public class LogicCodebookGen {
 
     // Create a file with the specified filename
     public static boolean createFile(String filename) {
@@ -19,24 +27,14 @@ public class UtilFileOutputs {
             File keyStoreFile = new File(filename);
 
             // Attempt to create new file in storage
-            if (keyStoreFile.createNewFile()) {
-
-                // return to caller that file could be created
-                return true;
-
-                // if its not possible prompt user
-            } else {
-
-                //return to caller that file already exists
-                return false;
-            }
+            // return to caller that file could be created
+            // if its not possible prompt user
+            //return to caller that file already exists
+            return keyStoreFile.createNewFile();
 
 
             // Catch any error from creating file
         } catch (IOException e) {
-
-            // Prompt user that file creation failed
-            System.out.println("Error: Failure to create file: " + filename + "");
 
             // Set flag to overwrite just in case
             return false;
@@ -44,19 +42,16 @@ public class UtilFileOutputs {
     }
 
     // Write generated keys to a file
-    public static void generateCodeBook(int keySize) throws NoSuchAlgorithmException {
-
-        // Prompt user to select which month to generate code book for
-        int monthNo = UtilGetTerminalInputs.getUserMonth();
+    public static boolean generateCodeBook(int monthNo, int keySize) throws NoSuchAlgorithmException {
 
         // After user has selected a month, get the number of days in that month
-        int noKeysToGen = UtilCodeBookGen.daysInMonth(monthNo);
+        int noKeysToGen = LogicMonthSelection.daysInMonth(monthNo);
 
         // Generate array of keys for selected month
-        String[] keyArr = UtilCodeBookGen.generateKeyArray(noKeysToGen, keySize);
+        String[] keyArr = LogicKeyGen.generateKeyArray(noKeysToGen, keySize);
 
         // Get name of chosen month
-        String chosenMonth = UtilCodeBookGen.nameOfMonth(monthNo);
+        String chosenMonth = LogicMonthSelection.nameOfMonth(monthNo);
 
         // Define name of file to store encryption keys
         String filename = chosenMonth + "_Keys.txt";
@@ -88,10 +83,14 @@ public class UtilFileOutputs {
             bufferedWriter.close();
             fileWriter.close();
 
+            // Return true to caller to indicate successful file writing
+            return true;
+
             // Catch any error if creating and writing to file fails
         } catch (IOException e) {
-            System.out.println("Error: Creation and Writing to file: " + filename + " Failed.");
+
+            // Return false to caller to indicate failed file writing
+            return false;
         }
     }
-
 }

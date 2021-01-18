@@ -1,5 +1,17 @@
 package com.company;
 
+/*
+ * Project Java-AESEncryption
+ * File: UtilTerminalOutputs.java
+ * @author Ryan Llewellyn
+ * Date: 09/01/2021
+ * Purpose: Handles terminal outputs from program.
+ */
+
+import logic.LogicConverters;
+import logic.LogicEncryptDecrypt;
+import logic.LogicIV;
+
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
@@ -14,7 +26,7 @@ public class UtilTerminalOutputs {
     public static void terminalOutputRunEncryption(String keyString, String encryptionAlgorithm, String message, String ivString) throws NoSuchPaddingException, InvalidAlgorithmParameterException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
 
         // Call Encryption function
-        String[] encryptionOutputArr = UtilAES.encryptMessage(UtilAES.stringToSecretKey(keyString), encryptionAlgorithm, message, ivString);
+        String[] encryptionOutputArr = LogicEncryptDecrypt.encryptMessage(LogicConverters.stringToSecretKey(keyString), encryptionAlgorithm, message, ivString);
 
         // Following are text outputs to terminal, this hint is included last
         String securityInformationPrompt = """
@@ -44,7 +56,7 @@ public class UtilTerminalOutputs {
                 For the purposes of AES Symmetric key sharing, in-person key exchange is recommended 
                 or another secure method of key exchange known as Diffie-Hellman key exchange is recommended 
                 if personal key exchange is not possible or you believe you're being monitored.
-                """.formatted(encryptionOutputArr[0], encryptionOutputArr[1], encryptionOutputArr[2], UtilAES.addIVToCiphertext(encryptionOutputArr[1], encryptionOutputArr[2]));
+                """.formatted(encryptionOutputArr[0], encryptionOutputArr[1], encryptionOutputArr[2], LogicIV.addIVToCiphertext(encryptionOutputArr[1], encryptionOutputArr[2]));
 
         // Prompt user that Encryption is happening
         System.out.println("\nEncryption Mode Active : ");
@@ -77,7 +89,7 @@ public class UtilTerminalOutputs {
     public static void terminalOutputRunDecryption(String keyString, String encryptionAlgorithm, String ciphertext, String ivString) throws NoSuchPaddingException, InvalidAlgorithmParameterException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
 
         // Call Decryption function
-        String[] decryptionOutputArr = UtilAES.decryptMessage(UtilAES.stringToSecretKey(keyString), encryptionAlgorithm, ciphertext, ivString);
+        String[] decryptionOutputArr = LogicEncryptDecrypt.decryptMessage(LogicConverters.stringToSecretKey(keyString), encryptionAlgorithm, ciphertext, ivString);
 
         // Following are text outputs to terminal, this hint is included last
         String securityInformationPrompt = """
@@ -107,7 +119,7 @@ public class UtilTerminalOutputs {
                 For the purposes of AES Symmetric key sharing, in-person key exchange is recommended 
                 or another secure method of key exchange known as Diffie-Hellman key exchange is recommended 
                 if personal key exchange is not possible or you believe you're being monitored.
-                """.formatted(decryptionOutputArr[0], decryptionOutputArr[1], decryptionOutputArr[2], UtilAES.addIVToCiphertext(decryptionOutputArr[1], decryptionOutputArr[2]));
+                """.formatted(decryptionOutputArr[0], decryptionOutputArr[1], decryptionOutputArr[2], LogicIV.addIVToCiphertext(decryptionOutputArr[1], decryptionOutputArr[2]));
 
         // Prompt user that Decryption is happening
         System.out.println("\nDecryption Mode Active : ");

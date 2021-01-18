@@ -1,5 +1,16 @@
 package com.company;
 
+/*
+ * Project Java-AESEncryption
+ * File: UtilGetTerminalInputs.java
+ * @author Ryan Llewellyn
+ * Date: 09/01/2021
+ * Purpose: Handles terminal inputs to program.
+ */
+
+import logic.LogicConverters;
+import logic.LogicIV;
+
 import javax.crypto.SecretKey;
 
 // import java scanner library
@@ -122,7 +133,7 @@ public class UtilGetTerminalInputs {
             try {
 
                 // Define secret key and convert input string to key
-                userDecryptionKey = UtilAES.stringToSecretKey(userDecryptionKeyString.trim());
+                userDecryptionKey = LogicConverters.stringToSecretKey(userDecryptionKeyString.trim());
 
                 // If it fails prompt user, clear input and try again
             } catch (Exception e) {
@@ -136,7 +147,7 @@ public class UtilGetTerminalInputs {
         }
 
         // Convert secret key back into string
-        return UtilAES.secretKeyToString(userDecryptionKey);
+        return LogicConverters.secretKeyToString(userDecryptionKey);
     }
 
     // Get combined IV and Ciphertext
@@ -214,7 +225,7 @@ public class UtilGetTerminalInputs {
             String message = getUserInput(0);
 
             // Generate Initialisation Vector String
-            String ivString = UtilAES.generateIVString();
+            String ivString = LogicIV.generateIVString();
 
             try {
 

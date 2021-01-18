@@ -1,5 +1,5 @@
 package com.company;
-/**
+/*
  * Project Java-AESEncryption
  * File: AESEncrypt.java
  * @author Ryan Llewellyn
@@ -9,6 +9,11 @@ package com.company;
 
 
 // import java crypto libraries
+import logic.LogicCodebookGen;
+import logic.LogicConverters;
+import logic.LogicIV;
+import logic.LogicKeyGen;
+
 import javax.crypto.SecretKey;
 
 // import java security libraries
@@ -27,7 +32,7 @@ public class AESEncrypt {
 
 		// Strip IV from Ciphertext and separate them,
 		// Return array containing 0 = IV, 1 = Ciphertext to caller
-		return UtilAES.stripIVFromCiphertext(userIvAndCiphertext);
+		return LogicIV.stripIVFromCiphertext(userIvAndCiphertext);
 	}
 	
 	// Main method, used for calling methods
@@ -68,10 +73,10 @@ public class AESEncrypt {
 			int keyGenMethod = UtilGetTerminalInputs.getKeyGenMethodChoice();
 
 			// Generate Secret Key
-			SecretKey key = UtilSecretKeyHandlers.setKeyGenMethod(keyGenMethod, encryptionBitLengthChoice);
+			SecretKey key = LogicKeyGen.keyMethodSelection(keyGenMethod, encryptionBitLengthChoice);
 
 			// Convert key to string
-			String keyString = UtilAES.secretKeyToString(key);
+			String keyString = LogicConverters.secretKeyToString(key);
 
 			// Perform encryption and ask user if they wish to encrypt another message
 			UtilGetTerminalInputs.getRepeatingEncryption(encryptionAlgorithm, keyString);
@@ -87,10 +92,10 @@ public class AESEncrypt {
 			String userDecryptionKeyString = UtilGetTerminalInputs.getKeyInput();
 
 			// Convert input key string into Secret Key
-			SecretKey userDecryptionKey = UtilAES.stringToSecretKey(userDecryptionKeyString);
+			SecretKey userDecryptionKey = LogicConverters.stringToSecretKey(userDecryptionKeyString);
 
 			// Convert decryption key to string
-			String userDecryptionKeyStringConv = UtilAES.secretKeyToString(userDecryptionKey);
+			String userDecryptionKeyStringConv = LogicConverters.secretKeyToString(userDecryptionKey);
 
 			// Perform Decryption and ask user if they would like to Decrypt another message
 			UtilGetTerminalInputs.getRepeatingDecryption(encryptionAlgorithm, userDecryptionKeyStringConv, combinedIvAndCipherChoice);
@@ -98,11 +103,19 @@ public class AESEncrypt {
 			// Program mode set to Generate Code Book
 		} else if (programModeSelection == 3) {
 
+			// Get month to generate codes for
+			// Prompt user to select which month to generate code book for
+			int monthNo = UtilGetTerminalInputs.getUserMonth();
+
 			// Generate code book
-			UtilFileOutputs.generateCodeBook(encryptionBitLengthChoice);
+			boolean fileGenSuccess = LogicCodebookGen.generateCodeBook(monthNo, encryptionBitLengthChoice);
 
-			System.out.println("Codebook Generated.");
-
+			// Check whether codebook generation was successful
+			if (fileGenSuccess){
+				System.out.println("Codebook Generated.");
+			} else {
+				System.out.println("ERROR: Codebook Generation Failed.");
+			}
 		}
 
 		// End of main method

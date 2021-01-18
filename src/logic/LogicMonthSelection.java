@@ -1,10 +1,15 @@
-package com.company;
+package logic;
 
-import javax.crypto.SecretKey;
-import java.security.NoSuchAlgorithmException;
+/**
+ * Project Java-AESEncryption
+ * File: LogicMonthSelection.java
+ * @author Ryan Llewellyn
+ * Date: 09/01/2021
+ * Purpose: Handles month selection for codebook generation, based on passed values.
+ */
 
 // Class generates code book of keys, number of keys correspond to number of days in the month
-public class UtilCodeBookGen {
+public class LogicMonthSelection {
 
     // Returns the number of days in a month, selected by user
     public static int daysInMonth (int monthNo) {
@@ -42,24 +47,4 @@ public class UtilCodeBookGen {
             default -> throw new IllegalStateException("Unexpected value: " + monthNo);
         };
     }
-
-    // Function generates an array of keys equal to the length of chosen month
-    public static String[] generateKeyArray(int noKeysToGen, int keySize) throws NoSuchAlgorithmException {
-
-        // Declare and initialise string array of secret keys
-        String[] keyArr = new String[noKeysToGen];
-
-        // Generate a key for the number of days in month
-       for (int i = 0; i < noKeysToGen; i++) {
-
-           // generate a key, convert it to a string and store it in the key array as a string
-           keyArr[i] = UtilAES.secretKeyToString(UtilAES.generateKey(keySize));
-       }
-
-       // Return the array of generated keys to caller
-       return keyArr;
-    }
-
-
-
 }

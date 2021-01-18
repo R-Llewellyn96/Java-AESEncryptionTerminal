@@ -1,9 +1,15 @@
-package com.company;
+package logic;
 
 /**
- * Updated Utility class
+ * Project Java-AESEncryption
+ * File: LogicHexConv.java
+ * @author Ryan Llewellyn
+ * Date: 09/01/2021
+ * Purpose: Handles conversion of Hex values.
  */
-public class UtilsConv {
+
+public class LogicHexConv {
+
     private static String	digits = "0123456789abcdef";
 
     /**
@@ -73,5 +79,4 @@ public class UtilsConv {
         }
         return bytes;
     }
-
 }
